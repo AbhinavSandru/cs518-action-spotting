@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>report_raviteja</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+
+<style>
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 10.5pt;
+    line-height: 1.4;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 24px 48px;
+    color: #000;
+  }
+  h1 { font-size: 15pt; text-align: center; margin-bottom: 3px; }
+  h2 { font-size: 12pt; margin-top: 14px; margin-bottom: 4px; border-bottom: 1px solid #ccc; padding-bottom: 2px; }
+  h3 { font-size: 10.5pt; margin-top: 10px; margin-bottom: 3px; }
+  p { margin: 4px 0; text-align: justify; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 8px 0; }
+  th, td { border: 1px solid #666; padding: 3px 7px; text-align: left; }
+  th { background: #e8e8e8; font-weight: bold; }
+  code, pre { font-family: Courier, monospace; font-size: 8.5pt; background: #f5f5f5; padding: 1px 3px; }
+  hr { border: none; border-top: 1px solid #ccc; margin: 10px 0; }
+  ul, ol { margin: 3px 0; padding-left: 22px; }
+  li { margin: 1px 0; }
+  math { font-size: 1em; }
+</style>
+</head>
+<body>
+<h1 id="action-spotting-in-soccer-broadcast-videos">Action Spotting in
+Soccer Broadcast Videos</h1>
+<p><strong>CS518: Deep Learning for Computer Vision</strong><br />
+Abhinav Sandru · Gaurav Chintakunta · Raviteja Ravella<br />
+GitHub: https://github.com/AbhinavSandru/cs518-action-spotting</p>
+<hr />
+<h2 id="introduction">1. Introduction</h2>
+<p>Broadcast soccer matches are rich sources of tactical and statistical
+information, but extracting structured event data from raw video
+requires significant manual effort. <strong>Action spotting</strong> is
+the task of automatically identifying the precise timestamps of
+predefined actions in untrimmed long-form video. Unlike action
+recognition, which classifies a pre-segmented clip, action spotting must
+locate when events occur within a full 90-minute match without any prior
+segmentation.</p>
+<p>This project addresses action spotting on the SoccerNet-v2 benchmark
+[1], which defines 17 action classes (goals, fouls, cards, corners,
+shots, substitutions, etc.) across 500 professional broadcast soccer
+games. The core challenge is <strong>extreme temporal sparsity</strong>:
+actions occur at fewer than one frame per thousand per class, making
+naive classification approaches degenerate — a model can achieve
+near-zero loss by predicting nothing.</p>
+<p>We propose a lightweight <strong>Transformer encoder</strong> trained
+on precomputed ResNet-152 [2] appearance features, combined with focal
+loss [3] and inverse-frequency class weighting to handle the severe
+class imbalance. The full pipeline — preprocessing, training, inference,
+and evaluation — runs on a single Apple M4 Pro laptop using Metal
+Performance Shaders (MPS) acceleration.</p>
+<p><strong>Final results on the SoccerNet-v2 test set: 38.18% mAP@1s ·
+52.86% mAP@5s.</strong></p>
+<hr />
+<h2 id="related-work-background-existing-approaches">2. Related Work /
+Background / Existing Approaches</h2>
+<h3 id="action-recognition-vs.-action-spotting">2.1 Action Recognition
+vs. Action Spotting</h3>
+<p>Standard action recognition (e.g., on Kinetics [4]) classifies
+pre-trimmed clips. Action spotting is strictly harder: the model must
+both detect and localize events in untrimmed video, producing
+(timestamp, class) pairs rather than a single label.</p>
+<h3 id="soccernet-benchmark">2.2 SoccerNet Benchmark</h3>
+<p>SoccerNet [1] introduced large-scale soccer action spotting.
+SoccerNet-v2 [5] extended the dataset to 500 games and 17 classes with
+tighter annotation quality. Evaluation uses <strong>Average-mAP</strong>
+— the mean of per-class average precision scores computed at multiple
+temporal tolerances (1s, 2s, 5s).</p>
+<h3 id="existing-approaches">2.3 Existing Approaches</h3>
+<p><strong>NetVLAD++ [6]</strong> is the official SoccerNet-v2 baseline.
+It uses a NetVLAD pooling layer to aggregate temporal context from
+sliding windows over precomputed features, achieving ~49% mAP@5s.</p>
+<p><strong>CALF [7]</strong> adds a calibration loss that enforces
+temporal ordering of predictions, reaching ~42% mAP@5s on
+SoccerNet-v1.</p>
+<p><strong>E2E-Spot [8]</strong> trains an end-to-end model directly on
+raw video frames using a lightweight CNN backbone, achieving 60%+ mAP on
+SoccerNet-v2 by learning sport-specific features rather than relying on
+ImageNet-pretrained representations.</p>
+<p><strong>Our approach</strong> differs from NetVLAD++ by using a
+Transformer encoder with self-attention instead of learnable pooling,
+and from E2E-Spot by operating on frozen precomputed features — making
+it feasible to train on a single laptop. We incorporate focal loss (from
+object detection [3]) into the action spotting domain, which
+significantly improves performance on rare classes.</p>
+<hr />
+<h2 id="methodology">3. Methodology</h2>
+<h3 id="problem-statement">3.1 Problem Statement</h3>
+<p><strong>Input:</strong> A full soccer broadcast match represented as
+precomputed ResNet-152 feature vectors
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="bold-italic">𝒙</mi><mi>t</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mn>2048</mn></msup></mrow><annotation encoding="application/x-tex">\mathbf{x}_t \in \mathbb{R}^{2048}</annotation></semantics></math>
+at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">t = 1, \ldots, T</annotation></semantics></math>
+frames, where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>≈</mo><mn>10</mn><mo>,</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">T \approx 10{,}800</annotation></semantics></math>
+per half at 2fps.</p>
+<p><strong>Output:</strong> A ranked list of predictions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>h</mi><mi>i</mi></msub><mo>,</mo><msub><mi>p</mi><mi>i</mi></msub><mo>,</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><msub><mi>s</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{(h_i, p_i, c_i, s_i)\}</annotation></semantics></math>
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>h</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">h_i \in \{1, 2\}</annotation></semantics></math>
+is the match half,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>i</mi></msub><annotation encoding="application/x-tex">p_i</annotation></semantics></math>
+is the timestamp in milliseconds,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>17</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">c_i \in \{1, \ldots, 17\}</annotation></semantics></math>
+is the action class, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">s_i \in [0,1]</annotation></semantics></math>
+is the confidence score.</p>
+<p><strong>Per-frame formulation:</strong> The model performs binary
+classification at every frame for each of 17 classes independently.
+Timestamps are derived post-hoc via non-maximum suppression on the
+per-frame score arrays.</p>
+<h3 id="preprocessing">3.2 Preprocessing</h3>
+<p>Raw feature files for each game are concatenated across both halves
+to form a single array of shape
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>T</mi><mo>,</mo><mn>2048</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(T, 2048)</annotation></semantics></math>.
+A per-frame binary label array of shape
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>T</mi><mo>,</mo><mn>17</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(T, 17)</annotation></semantics></math>
+is constructed from the JSON annotations.</p>
+<p>To avoid penalizing the model for being one frame off on a 2fps
+signal, we apply <strong>Gaussian label spreading</strong>: each
+annotated frame
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>t</mi><mo>*</mo></msup><annotation encoding="application/x-tex">t^*</annotation></semantics></math>
+receives a soft target using a Gaussian kernel with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma = 1</annotation></semantics></math>
+over a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\pm 2</annotation></semantics></math>
+frame neighborhood:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mrow><mi>t</mi><mo>,</mo><mi>c</mi></mrow></msub><mo>=</mo><mrow><mi mathvariant="normal">exp</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>−</mi><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msup><mi>t</mi><mo>*</mo></msup><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn><msup><mi>σ</mi><mn>2</mn></msup></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="1.0em"></mspace><mrow><mtext mathvariant="normal">for </mtext><mspace width="0.333em"></mspace></mrow><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><msup><mi>t</mi><mo>*</mo></msup><mo stretchy="false" form="prefix">|</mo><mo>≤</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">y_{t, c} = \exp\!\left(-\frac{(t - t^*)^2}{2\sigma^2}\right) \quad \text{for } |t - t^*| \leq 2</annotation></semantics></math></p>
+<p>The full game arrays are then sliced into overlapping 60-frame
+windows (stride 30) and saved as compressed <code>.npz</code> files.
+This <strong>preprocessing step</strong> reduces training I/O by 8×
+compared to loading full game files on the fly.</p>
+<h3 id="model-architecture">3.3 Model Architecture</h3>
+<p>The model, <strong>ActionSpotter</strong>, is a standard Transformer
+encoder operating on sliding windows of frame features.</p>
+<p><strong>Step 1 — L2 Normalization:</strong> Input features are
+L2-normalized along the feature dimension, projecting each vector onto
+the unit hypersphere. This removes scale variance across different
+games, stadiums, and broadcast cameras.</p>
+<p><strong>Step 2 — Linear Projection:</strong> A learned linear layer
+maps from 2048 to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mtext mathvariant="normal">model</mtext></msub><mo>=</mo><mn>256</mn></mrow><annotation encoding="application/x-tex">d_\text{model} = 256</annotation></semantics></math>
+dimensions.</p>
+<p><strong>Step 3 — Positional Embedding:</strong> A learned positional
+embedding of shape
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mn>1000</mn><mo>,</mo><mn>256</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1, 1000, 256)</annotation></semantics></math>
+is added, encoding the temporal position of each frame within the
+window.</p>
+<p><strong>Step 4 — Transformer Encoder:</strong> Four encoder layers,
+each with: - Multi-head self-attention:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">head</mtext></msub><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">n_\text{head} = 4</annotation></semantics></math>
+heads - Feed-forward network:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mtext mathvariant="normal">ff</mtext></msub><mo>=</mo><mn>1024</mn></mrow><annotation encoding="application/x-tex">d_\text{ff} = 1024</annotation></semantics></math>
+- Dropout:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.3</mn></mrow><annotation encoding="application/x-tex">p = 0.3</annotation></semantics></math>
+- Layer normalization (post-attention)</p>
+<p><strong>Step 5 — Classification Head:</strong> A linear layer maps
+each frame’s hidden state to 17 logits.</p>
+<p><strong>Output:</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>,</mo><mi>T</mi><mo>,</mo><mn>17</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(B, T, 17)</annotation></semantics></math>
+logits — one score per frame per class. Total parameters: ~1.4
+million.</p>
+<p>The key advantage of self-attention over RNNs is that every frame in
+the 30-second window has direct access to every other frame in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(1)</annotation></semantics></math>
+operations, enabling the model to learn long-range temporal patterns
+(e.g., buildup to a goal).</p>
+<h3 id="loss-function">3.4 Loss Function</h3>
+<p>With a negative-to-positive ratio of $$1000:1 per class, standard
+binary cross-entropy (BCE) produces degenerate solutions — predicting
+zero for all frames achieves near-zero loss while detecting nothing.</p>
+<p>We combine three strategies:</p>
+<p><strong>Focal Loss [3]:</strong> For each frame-class pair with
+predicted probability
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>t</mi></msub><annotation encoding="application/x-tex">p_t</annotation></semantics></math>:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="script">ℒ</mi><mtext mathvariant="normal">focal</mtext></msub><mo>=</mo><mi>−</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>t</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mi>γ</mi></msup><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="1.0em"></mspace><mi>γ</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\mathcal{L}_\text{focal} = -(1 - p_t)^\gamma \log(p_t), \quad \gamma = 2</annotation></semantics></math>
+The factor
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>t</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(1 - p_t)^2</annotation></semantics></math>
+down-weights easy negatives (where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>t</mi></msub><mo>≈</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">p_t \approx 0</annotation></semantics></math>
+and the model is correctly confident), forcing the gradient to
+concentrate on uncertain, hard positive frames.</p>
+<p><strong>Sqrt Inverse-Frequency Class Weights:</strong> Per-class
+positive weight:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mi>c</mi></msub><mo>=</mo><mtext mathvariant="normal">clip</mtext><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><mfrac><msubsup><mi>N</mi><mi>c</mi><mo>−</mo></msubsup><msubsup><mi>N</mi><mi>c</mi><mo>+</mo></msubsup></mfrac></msqrt><mo>,</mo><mspace width="0.222em"></mspace><mn>1</mn><mo>,</mo><mspace width="0.222em"></mspace><mn>50</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">w_c = \text{clip}\!\left(\sqrt{\frac{N^-_c}{N^+_c}},\ 1,\ 50\right)</annotation></semantics></math>
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>N</mi><mi>c</mi><mo>+</mo></msubsup><annotation encoding="application/x-tex">N^+_c</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>N</mi><mi>c</mi><mo>−</mo></msubsup><annotation encoding="application/x-tex">N^-_c</annotation></semantics></math>
+are positive and negative frame counts for class
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
+in the training set. The square-root dampens the raw ratio
+($<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1000</mn><mo stretchy="false" form="postfix">)</mo><mi>t</mi><mi>o</mi><mi>a</mi><mi>s</mi><mi>t</mi><mi>a</mi><mi>b</mi><mi>l</mi><mi>e</mi><mi>r</mi><mi>a</mi><mi>n</mi><mi>g</mi><mi>e</mi><mo stretchy="false" form="prefix">(</mo></mrow><annotation encoding="application/x-tex">1000) to a stable range (</annotation></semantics></math>$8–45).
+The clip at 50 prevents any single class from dominating the
+gradient.</p>
+<p><strong>Combined loss:</strong>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">ℒ</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>B</mi><mi>T</mi></mrow></mfrac><munder><mo>∑</mo><mrow><mi>b</mi><mo>,</mo><mi>t</mi></mrow></munder><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>t</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mo>⋅</mo><mtext mathvariant="normal">BCE</mtext><mo stretchy="false" form="prefix">(</mo><msub><mtext mathvariant="normal">logit</mtext><mrow><mi>b</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>,</mo><mspace width="0.222em"></mspace><msub><mi>y</mi><mrow><mi>b</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>,</mo><mspace width="0.222em"></mspace><msub><mi>w</mi><mi>c</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{L} = \frac{1}{BT} \sum_{b,t} (1 - p_t)^2 \cdot \text{BCE}(\text{logit}_{b,t},\ y_{b,t},\ w_c)</annotation></semantics></math></p>
+<h3 id="training-configuration">3.5 Training Configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Hyperparameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Optimizer</td>
+<td>Adam</td>
+</tr>
+<tr>
+<td>Learning rate</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>×</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>4</mn></mrow></msup></mrow><annotation encoding="application/x-tex">1 \times 10^{-4}</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>LR scheduler</td>
+<td>ReduceLROnPlateau (factor 0.5, patience 3)</td>
+</tr>
+<tr>
+<td>Early stopping patience</td>
+<td>5 epochs</td>
+</tr>
+<tr>
+<td>Batch size</td>
+<td>32</td>
+</tr>
+<tr>
+<td>Gradient clipping</td>
+<td>max norm 1.0</td>
+</tr>
+<tr>
+<td>Window size</td>
+<td>60 frames (30 seconds)</td>
+</tr>
+<tr>
+<td>Stride</td>
+<td>30 frames</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mtext mathvariant="normal">model</mtext></msub><annotation encoding="application/x-tex">d_\text{model}</annotation></semantics></math></td>
+<td>256</td>
+</tr>
+<tr>
+<td>Attention heads</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Encoder layers</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Dropout</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>Focal loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math></td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>Training runs on Apple M4 Pro via PyTorch MPS backend. Convergence
+typically occurs in 15–20 epochs (~3 hours total).</p>
+<h3 id="inference">3.6 Inference</h3>
+<p>At test time the full game is processed via sliding window inference.
+For each window position, per-frame probabilities are accumulated and
+averaged across overlapping windows. <strong>Non-Maximum Suppression
+(NMS)</strong> is then applied per class: the peak-scoring frame above a
+threshold is selected as a prediction, and all frames within
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>10</mn></mrow><annotation encoding="application/x-tex">\pm 10</annotation></semantics></math>
+frames are suppressed before repeating.</p>
+<p>Per-class thresholds are tuned on the validation set by sweeping
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mn>0.05</mn><mo>,</mo><mn>0.50</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0.05, 0.50]</annotation></semantics></math>
+in steps of 0.05 and selecting the threshold maximizing per-class val
+mAP. Most classes converge to 0.05, reflecting the model’s calibrated
+but low-magnitude output scores.</p>
+<hr />
+<h2 id="experiments">4. Experiments</h2>
+<h3 id="ablation-study">4.1 Ablation Study</h3>
+<p>We trained incrementally adding each component to measure its
+individual contribution:</p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>mAP@1s</th>
+<th>mAP@5s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline: plain BCE, no weighting</td>
+<td>~0%</td>
+<td>~0%</td>
+</tr>
+<tr>
+<td>+ Sqrt inverse-frequency class weights</td>
+<td>~24%</td>
+<td>~39%</td>
+</tr>
+<tr>
+<td>+ Focal loss
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\gamma=2</annotation></semantics></math>)</td>
+<td>~28%</td>
+<td>~44%</td>
+</tr>
+<tr>
+<td>+ L2 feature normalization</td>
+<td>31.94%</td>
+<td>~48%</td>
+</tr>
+<tr>
+<td>+ Per-class threshold tuning</td>
+<td><strong>38.18%</strong></td>
+<td><strong>52.86%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The baseline produces zero detections — the model learns to predict
+nothing. Class weights alone recover meaningful performance. Focal loss
+adds further improvement by redirecting gradient toward hard examples.
+L2 normalization is a single-line addition that removes scale variance
+and gives a consistent gain. Per-class threshold tuning provides the
+largest single jump.</p>
+<h3 id="per-class-results-test-set">4.2 Per-Class Results (Test
+Set)</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>mAP@1s</th>
+<th>mAP@5s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Substitution</td>
+<td>0.6951</td>
+<td>0.8630</td>
+</tr>
+<tr>
+<td>Foul</td>
+<td>0.6281</td>
+<td>0.8096</td>
+</tr>
+<tr>
+<td>Yellow card</td>
+<td>0.5572</td>
+<td>0.7663</td>
+</tr>
+<tr>
+<td>Offside</td>
+<td>0.5807</td>
+<td>0.6409</td>
+</tr>
+<tr>
+<td>Throw-in</td>
+<td>0.4852</td>
+<td>0.6684</td>
+</tr>
+<tr>
+<td>Yellow-&gt;red card</td>
+<td>0.4757</td>
+<td>0.6566</td>
+</tr>
+<tr>
+<td>Corner</td>
+<td>0.4514</td>
+<td>0.6606</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>0.4483</td>
+<td>0.7390</td>
+</tr>
+<tr>
+<td>Goalkeeper saves</td>
+<td>0.4422</td>
+<td>0.6970</td>
+</tr>
+<tr>
+<td>Shots off target</td>
+<td>0.4083</td>
+<td>0.4636</td>
+</tr>
+<tr>
+<td>Shots on target</td>
+<td>0.3635</td>
+<td>0.4496</td>
+</tr>
+<tr>
+<td>Indirect free-kick</td>
+<td>0.3262</td>
+<td>0.5699</td>
+</tr>
+<tr>
+<td>Clearance</td>
+<td>0.2850</td>
+<td>0.3802</td>
+</tr>
+<tr>
+<td>Direct free-kick</td>
+<td>0.2825</td>
+<td>0.5207</td>
+</tr>
+<tr>
+<td>Kick-off</td>
+<td>0.0472</td>
+<td>0.0745</td>
+</tr>
+<tr>
+<td>Red card</td>
+<td>0.0143</td>
+<td>0.0271</td>
+</tr>
+<tr>
+<td>Ball out of play</td>
+<td>0.0000</td>
+<td>0.0000</td>
+</tr>
+<tr>
+<td><strong>Average-mAP</strong></td>
+<td><strong>0.3818</strong></td>
+<td><strong>0.5286</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>High performers:</strong> Substitution (69.5%) and Foul
+(62.8%) are visually distinctive — substitutions involve a player in a
+bib at the sideline with a board held up; fouls involve players
+clustering and falling. These consistent visual cues are well-captured
+by ResNet-152 features.</p>
+<p><strong>Low performers:</strong> Ball out of play (0%) is visually
+indistinguishable from normal play at 2fps — the ball’s position
+relative to the line cannot be determined from appearance features
+alone. Red card (1.4%) is extremely rare (fewer than 1 per game), and
+Kick-off (4.7%) looks identical to open play.</p>
+<h3 id="gap-analysis-map1s-vs.-map5s">4.3 Gap Analysis: mAP@1s
+vs. mAP@5s</h3>
+<p>The 14-point gap between tight (38.18%) and loose (52.86%) tolerance
+is largely attributable to the 2fps feature extraction rate. At 2fps,
+the maximum achievable temporal precision is 0.5 seconds per frame — a
+structural limitation that affects the 1-second tolerance metric
+directly. Higher-fps features would close this gap significantly.</p>
+<hr />
+<h2 id="conclusion-and-future-work">5. Conclusion and Future Work</h2>
+<p>We presented a lightweight Transformer encoder for temporal action
+spotting on SoccerNet-v2, trained entirely on precomputed ResNet-152
+features on a consumer laptop. The key contributions are:</p>
+<ol type="1">
+<li>Demonstrating that focal loss combined with sqrt inverse-frequency
+class weighting resolves the degenerate training failure caused by
+extreme temporal sparsity.</li>
+<li>Achieving 38.18% mAP@1s and 52.86% mAP@5s — competitive with
+NetVLAD++ — with only ~1.4M parameters and no end-to-end backbone
+training.</li>
+<li>A complete reproducible pipeline including preprocessing, training,
+inference, threshold tuning, and evaluation.</li>
+</ol>
+<p><strong>Future work:</strong></p>
+<ul>
+<li><strong>End-to-end backbone fine-tuning:</strong> Fine-tuning
+ResNet-152 on soccer-specific data would produce domain-adapted features
+and likely close the gap to top methods (60%+).</li>
+<li><strong>Multi-modal features:</strong> Adding optical flow or audio
+would enable detection of visually ambiguous classes like Ball out of
+play.</li>
+<li><strong>Longer temporal context:</strong> Extending beyond 30-second
+windows using hierarchical attention or full-game BERT-style pretraining
+could capture match-state context (score, time, fatigue).</li>
+<li><strong>Higher frame rate:</strong> Using 25fps features instead of
+2fps would remove the structural precision bottleneck at 1-second
+tolerance.</li>
+</ul>
+<hr />
+<h2 id="references">References</h2>
+<p>[1] Giancola, S., et al. “SoccerNet: A Scalable Dataset for Action
+Spotting in Soccer Videos.” CVPR Workshops, 2018.</p>
+<p>[2] He, K., et al. “Deep Residual Learning for Image Recognition.”
+CVPR, 2016.</p>
+<p>[3] Lin, T.Y., et al. “Focal Loss for Dense Object Detection.” ICCV,
+2017.</p>
+<p>[4] Kay, W., et al. “The Kinetics Human Action Video Dataset.”
+arXiv:1705.06950, 2017.</p>
+<p>[5] Deliège, A., et al. “SoccerNet-v2: A Dataset and Benchmarks for
+Holistic Understanding of Broadcast Soccer Videos.” CVPR Workshops,
+2021.</p>
+<p>[6] Arun, M., et al. “NetVLAD++: Efficient Aggregation of
+Multi-Frame-Multi-Resolution Features for Action Spotting.” CVPR
+Workshops, 2021.</p>
+<p>[7] Cioppa, A., et al. “A Context-Aware Loss Function for Action
+Spotting in Soccer Videos.” CVPR, 2020.</p>
+<p>[8] Hong, J., et al. “Spotting Temporally Precise, Fine-Grained
+Events in Video.” ECCV, 2022.</p>
+<hr />
+<h2 id="appendix">Appendix</h2>
+<h3 id="a.-personal-contribution">A. Personal Contribution</h3>
+<p>My focus was on the inference pipeline, evaluation framework, and
+result analysis. I implemented <code>src/evaluate.py</code>, which
+handles sliding-window inference with overlap averaging, per-class
+non-maximum suppression, and the SoccerNet JSON output format. One
+non-obvious design choice was the NMS suppression window: too small (±3
+frames) and the same event generated multiple detections at slightly
+different frames; too large (±20 frames) and closely spaced events of
+the same class were merged. Empirically, ±10 frames balanced precision
+and recall across all 17 classes. I also wrote
+<code>src/tune_thresholds.py</code>, which sweeps confidence thresholds
+per class on the validation set, a step that alone improved mAP@1s from
+~31% to 38.18%.</p>
+<h3 id="b.-implementation-details">B. Implementation Details</h3>
+<p><strong>Hardware:</strong> Apple MacBook Pro M4 Pro, 24GB unified
+memory. Inference runs on MPS; full test-set evaluation takes ~25
+minutes.</p>
+<p><strong>Output format:</strong> Predictions are saved per game as
+<code>results_spotting.json</code> matching the SoccerNet submission
+schema:
+<code>{ "predictions": [{ "gameTime": "1 - 12:34", "label": "Goal", "position": 754000, "half": 1, "confidence": 0.82 }, ...] }</code>.</p>
+<p><strong>Threshold tuning:</strong> Per-class thresholds swept over
+[0.05, 0.50] in steps of 0.05 on the validation set. Most classes
+converged to 0.05; Ball out of play settled at 0.20, Goal at 0.25.</p>
+<p><strong>Key commands:</strong> - Inference + evaluation:
+<code>python main.py --mode evaluate</code> - Threshold tuning:
+<code>python -m src.tune_thresholds</code></p>
+<h3 id="c.-approaches-that-did-not-work">C. Approaches That Did Not
+Work</h3>
+<p><strong>Single global threshold (0.5):</strong> The model’s output
+scores are calibrated low — most confident predictions sit around
+0.2–0.35. A 0.5 cutoff produced zero detections across all classes.
+Per-class tuning on validation data was essential.</p>
+<p><strong>NMS by score suppression only:</strong> An early NMS version
+deleted all frames within the suppression window regardless of class.
+This incorrectly suppressed simultaneous events of different classes
+(e.g., a foul and a yellow card at the same timestamp). Switching to
+per-class NMS fixed this.</p>
+<p><strong>Averaging logits instead of probabilities across
+windows:</strong> Overlap averaging was first applied to raw logits
+before the sigmoid. Because logit scales vary across classes
+(high-frequency classes have larger logit magnitudes), averaging logits
+over-weighted those classes. Averaging post-sigmoid probabilities gave a
+more balanced and accurate consensus.</p>
+<p><strong>Using SoccerNet’s official evaluator directly on raw
+scores:</strong> The official <code>evaluate</code> function expects
+predictions already filtered by threshold. Passing all frames (with
+scores near zero) caused the AP computation to be dominated by false
+positives and returned near-zero mAP even for well-trained models.
+Applying the confidence threshold before passing to the evaluator was
+the fix.</p>
+</body>
+</html>
