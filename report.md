@@ -1,6 +1,6 @@
 # Action Spotting in Soccer Broadcast Videos
 **CS518: Deep Learning for Computer Vision**  
-Abhinav Sandru — abhinav.sandru@gmail.com  
+Abhinav Sandru · Gaurav Chintakunta · Raviteja Ravella  
 GitHub: https://github.com/AbhinavSandru/cs518-action-spotting
 
 ---
@@ -214,7 +214,7 @@ We presented a lightweight Transformer encoder for temporal action spotting on S
 
 ### A. Team Contribution
 
-This is an individual project. All components — dataset setup, preprocessing pipeline, model architecture, training loop, evaluation, threshold tuning, and demo notebook — were implemented solely by Abhinav Sandru.
+This project was completed by Abhinav Sandru, Gaurav Chintakunta, and Raviteja Ravella. All components — dataset setup, preprocessing pipeline, model architecture, training loop, evaluation, threshold tuning, and demo notebook — were implemented collaboratively by the team.
 
 ### B. Implementation Details
 
