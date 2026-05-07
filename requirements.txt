@@ -1,0 +1,7 @@
+torch
+torchvision
+SoccerNet
+einops
+numpy
+tqdm
+matplotlib

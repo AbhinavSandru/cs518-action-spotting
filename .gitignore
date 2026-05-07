@@ -1,0 +1,13 @@
+data/
+checkpoints/
+results/predictions/
+results/predictions_val/
+results/demo_clips/
+__pycache__/
+*.pyc
+.DS_Store
+._*
+.claude/
+*.mkv
+*.mp4
+*.npy
