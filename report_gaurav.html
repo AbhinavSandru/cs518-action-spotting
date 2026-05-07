@@ -668,58 +668,202 @@ Spotting in Soccer Videos.” CVPR, 2020.</p>
 Events in Video.” ECCV, 2022.</p>
 <hr />
 <h2 id="appendix">Appendix</h2>
-<h3 id="a.-personal-contribution">A. Personal Contribution</h3>
-<p>I was responsible for the data preprocessing pipeline and dataset
-infrastructure. This involved writing <code>src/preprocess.py</code>,
-which reads raw SoccerNet ResNet-152 <code>.npy</code> feature files,
+<h3 id="a.-individual-contribution">A. Individual Contribution</h3>
+<p>My primary responsibility was the data preprocessing pipeline and
+dataset infrastructure. I wrote <code>src/preprocess.py</code>, which
+reads raw SoccerNet ResNet-152 <code>.npy</code> feature files,
 constructs per-frame binary label arrays from the JSON annotations,
-applies Gaussian label spreading, and slices everything into overlapping
-60-frame windows saved as compressed <code>.npz</code> files. The design
-decisions here had a direct impact on training stability: the window
-stride of 30 frames ensures every annotated event appears in at least
-two windows, giving the model multiple views of each action. I also
-built the <code>WindowDataset</code> class in
-<code>src/dataset.py</code> and verified that it correctly handles
-boundary windows at the end of each half.</p>
-<h3 id="b.-implementation-details">B. Implementation Details</h3>
+applies Gaussian label spreading (σ=1, ±2-frame neighborhood), and
+slices the result into overlapping 60-frame windows saved as compressed
+<code>.npz</code> files. I chose a stride of 30 frames so every
+annotated event appears in at least two windows, giving the model
+multiple views of each action. I also built the
+<code>WindowDataset</code> class in <code>src/dataset.py</code>,
+verified correct handling of boundary windows at the end of each half,
+and tuned the σ parameter by observing NMS peak sharpness — σ=2 caused
+blurry plateaus that confused NMS, while σ=1 produced clean, localizable
+peaks.</p>
+<h3 id="b.-evaluation">B. Evaluation</h3>
+<p><strong>Ablation Study</strong></p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>mAP@1s</th>
+<th>mAP@5s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline: plain BCE, no weighting</td>
+<td>~0%</td>
+<td>~0%</td>
+</tr>
+<tr>
+<td>+ Sqrt inverse-frequency class weights</td>
+<td>~24%</td>
+<td>~39%</td>
+</tr>
+<tr>
+<td>+ Focal loss (γ=2)</td>
+<td>~28%</td>
+<td>~44%</td>
+</tr>
+<tr>
+<td>+ L2 feature normalization</td>
+<td>31.94%</td>
+<td>~48%</td>
+</tr>
+<tr>
+<td>+ Per-class threshold tuning</td>
+<td><strong>38.18%</strong></td>
+<td><strong>52.86%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Each component contributes meaningfully. The baseline predicts
+nothing — class weights alone recover 24% mAP@1s. Focal loss pushes hard
+examples, L2 normalization removes scale variance, and per-class
+threshold tuning provides the largest single jump from ~31% to
+38.18%.</p>
+<p><strong>Full Per-Class Results (Test Set)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>mAP@1s</th>
+<th>mAP@5s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Substitution</td>
+<td>0.6951</td>
+<td>0.8630</td>
+</tr>
+<tr>
+<td>Foul</td>
+<td>0.6281</td>
+<td>0.8096</td>
+</tr>
+<tr>
+<td>Yellow card</td>
+<td>0.5572</td>
+<td>0.7663</td>
+</tr>
+<tr>
+<td>Offside</td>
+<td>0.5807</td>
+<td>0.6409</td>
+</tr>
+<tr>
+<td>Throw-in</td>
+<td>0.4852</td>
+<td>0.6684</td>
+</tr>
+<tr>
+<td>Yellow→red card</td>
+<td>0.4757</td>
+<td>0.6566</td>
+</tr>
+<tr>
+<td>Corner</td>
+<td>0.4514</td>
+<td>0.6606</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>0.4483</td>
+<td>0.7390</td>
+</tr>
+<tr>
+<td>Goalkeeper saves</td>
+<td>0.4422</td>
+<td>0.6970</td>
+</tr>
+<tr>
+<td>Shots off target</td>
+<td>0.4083</td>
+<td>0.4636</td>
+</tr>
+<tr>
+<td>Shots on target</td>
+<td>0.3635</td>
+<td>0.4496</td>
+</tr>
+<tr>
+<td>Indirect free-kick</td>
+<td>0.3262</td>
+<td>0.5699</td>
+</tr>
+<tr>
+<td>Clearance</td>
+<td>0.2850</td>
+<td>0.3802</td>
+</tr>
+<tr>
+<td>Direct free-kick</td>
+<td>0.2825</td>
+<td>0.5207</td>
+</tr>
+<tr>
+<td>Kick-off</td>
+<td>0.0472</td>
+<td>0.0745</td>
+</tr>
+<tr>
+<td>Red card</td>
+<td>0.0143</td>
+<td>0.0271</td>
+</tr>
+<tr>
+<td>Ball out of play</td>
+<td>0.0000</td>
+<td>0.0000</td>
+</tr>
+<tr>
+<td><strong>Average-mAP</strong></td>
+<td><strong>0.3818</strong></td>
+<td><strong>0.5286</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The 14-point gap between mAP@1s and mAP@5s is largely structural: at
+2fps, one frame equals 0.5 seconds, so any prediction that is off by a
+single frame misses the 1-second tolerance entirely. Higher frame-rate
+features would close this gap significantly.</p>
+<h3 id="c.-implementation-details">C. Implementation Details</h3>
 <p><strong>Hardware:</strong> Apple MacBook Pro M4 Pro, 24GB unified
-memory. Preprocessing runs on CPU; the bottleneck is disk I/O from the
-external SSD.</p>
-<p><strong>Storage layout:</strong> Raw SoccerNet features (~200GB) on
-external Samsung T5 SSD. After preprocessing, ~200K training windows and
-~65K val/test windows (~70GB total) are stored on the internal SSD so
-the training DataLoader does not bottleneck on USB transfer speeds.</p>
-<p><strong>Preprocessing output:</strong> Each <code>.npz</code> file
-contains two arrays — <code>features</code> of shape
-<code>(60, 2048)</code> and <code>labels</code> of shape
-<code>(60, 17)</code>. Files are named by game path and window index for
-reproducibility.</p>
+memory. Training uses PyTorch MPS backend (~3 hours to convergence).</p>
+<p><strong>Data storage:</strong> SoccerNet ResNet-152 features (~200GB)
+stored on external Samsung T5 SSD. Preprocessed <code>.npz</code>
+windows (~70GB) stored on internal SSD for fast DataLoader I/O.</p>
 <p><strong>Key commands:</strong> - Preprocessing:
-<code>python -m src.preprocess</code> (run once, ~4 hours) - Training:
+<code>python -m src.preprocess</code> - Training:
 <code>python main.py --mode train</code> - Evaluation:
-<code>python main.py --mode evaluate</code></p>
-<h3 id="c.-approaches-that-did-not-work">C. Approaches That Did Not
+<code>python main.py --mode evaluate</code> - Threshold tuning:
+<code>python -m src.tune_thresholds</code></p>
+<p><strong>Notebook:</strong> A self-contained demo running the full
+pipeline on synthetic data is available in
+<code>CS518_ActionSpotting_Demo.ipynb</code> — no SoccerNet download
+required.</p>
+<h3 id="d.-approaches-that-did-not-work">D. Approaches That Did Not
 Work</h3>
-<p><strong>Eager loading full game files:</strong> The original
-<code>SoccerNetDataset</code> loaded entire <code>.npy</code> game
-arrays at training time. With 500 games this caused 18GB+ RAM usage and
-repeated OOM kills. Moving to the pre-sliced <code>.npz</code> window
-approach reduced peak RAM below 4GB.</p>
-<p><strong>Non-overlapping windows (stride = window size):</strong> An
-early configuration used stride=60 (no overlap). Events that fell near
-window boundaries were truncated and the model saw them in only one
-window with partial context. Overlapping windows (stride=30) ensured
-full temporal context around every annotation and improved mAP by
-~2%.</p>
-<p><strong>Label spreading with σ=2:</strong> Wider Gaussian spreading
-blurred labels across too many frames, causing the model to predict
-broad, low-confidence plateaus rather than sharp peaks. NMS then
-struggled to pick a single peak. σ=1 with a ±2 frame neighborhood gave
-the sharpest predictions.</p>
-<p><strong>Concatenating both halves into one array:</strong> Initially
-I tried feeding the full 90-minute game as a single array. The
-positional embedding (capped at 1000 positions) overflowed for windows
-beyond position 1000, causing undefined behavior. Processing each half
-separately and concatenating the prediction lists resolved this.</p>
+<p><strong>Hard BCE with raw class weights:</strong> Using the raw
+neg/pos ratio (~1000×) as <code>pos_weight</code> caused loss to spike
+to NaN within 2 epochs. The sqrt scaling was essential to bring weights
+into a stable 8–45 range.</p>
+<p><strong>Global threshold (0.5):</strong> The model’s output scores
+rarely exceed 0.35. A single 0.5 threshold produced zero detections.
+Per-class threshold tuning on the validation set (sweeping 0.05–0.50)
+resolved this.</p>
+<p><strong>pin_memory=True on MPS:</strong> Triggers a PyTorch warning
+and slower transfers on Apple Silicon. Setting
+<code>pin_memory=False</code> and <code>num_workers=0</code> gave
+stable, faster training.</p>
+<p><strong>Eager loading full game arrays:</strong> Loading full
+<code>.npy</code> game files during training caused 18GB+ RAM usage and
+OOM kills. Pre-slicing into <code>.npz</code> windows reduced peak RAM
+to under 4GB.</p>
 </body>
 </html>

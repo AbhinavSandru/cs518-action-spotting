@@ -212,15 +212,54 @@ We presented a lightweight Transformer encoder for temporal action spotting on S
 
 ## Appendix
 
-### A. Personal Contribution
+### A. Individual Contribution
 
-My primary responsibility was the model architecture and training pipeline. I designed the ActionSpotter Transformer encoder — choosing the four-layer configuration, the d_model=256 projection, and the learned positional embeddings — and iterated on it until the model reliably converged. I also owned the training loop: integrating focal loss, working out the sqrt inverse-frequency weighting formula, and implementing gradient clipping after observing loss spikes with raw class weights. Setting up the PyTorch MPS backend on the M4 Pro was non-trivial; early runs silently fell back to CPU and I had to instrument timing logs to catch this. Once confirmed on MPS, training time dropped from ~12 hours to ~3 hours per run.
+My primary responsibility was the model architecture and training pipeline. I designed the ActionSpotter Transformer encoder — selecting the four-layer configuration, d_model=256 projection, multi-head self-attention with 4 heads, and learned positional embeddings — and iterated on it until convergence was reliable. I implemented the training loop end-to-end: integrating focal loss, deriving the sqrt inverse-frequency weighting formula, adding gradient clipping after observing NaN losses with raw class weights, and wiring up the ReduceLROnPlateau scheduler. Setting up the PyTorch MPS backend on the M4 Pro required explicit device placement and careful DataLoader configuration — early runs silently fell back to CPU until I added timing instrumentation to catch it. I also ran all ablation experiments, incrementally enabling each component to quantify its individual contribution to mAP.
 
-### B. Implementation Details
+### B. Evaluation
 
-**Hardware:** Apple MacBook Pro M4 Pro, 24GB unified memory. PyTorch MPS backend used throughout training.
+**Ablation Study**
 
-**Data storage:** SoccerNet ResNet-152 features (~200GB) stored on external Samsung T5 SSD. Preprocessed `.npz` windows (~70GB) cached on the internal SSD to avoid I/O bottlenecks during training.
+| Configuration | mAP@1s | mAP@5s |
+|---|---|---|
+| Baseline: plain BCE, no weighting | ~0% | ~0% |
+| + Sqrt inverse-frequency class weights | ~24% | ~39% |
+| + Focal loss (γ=2) | ~28% | ~44% |
+| + L2 feature normalization | 31.94% | ~48% |
+| + Per-class threshold tuning | **38.18%** | **52.86%** |
+
+Each component contributes meaningfully. The baseline predicts nothing — class weights alone recover 24% mAP@1s. Focal loss pushes hard examples, L2 normalization removes scale variance, and per-class threshold tuning provides the largest single jump from ~31% to 38.18%.
+
+**Full Per-Class Results (Test Set)**
+
+| Class | mAP@1s | mAP@5s |
+|---|---|---|
+| Substitution | 0.6951 | 0.8630 |
+| Foul | 0.6281 | 0.8096 |
+| Yellow card | 0.5572 | 0.7663 |
+| Offside | 0.5807 | 0.6409 |
+| Throw-in | 0.4852 | 0.6684 |
+| Yellow→red card | 0.4757 | 0.6566 |
+| Corner | 0.4514 | 0.6606 |
+| Goal | 0.4483 | 0.7390 |
+| Goalkeeper saves | 0.4422 | 0.6970 |
+| Shots off target | 0.4083 | 0.4636 |
+| Shots on target | 0.3635 | 0.4496 |
+| Indirect free-kick | 0.3262 | 0.5699 |
+| Clearance | 0.2850 | 0.3802 |
+| Direct free-kick | 0.2825 | 0.5207 |
+| Kick-off | 0.0472 | 0.0745 |
+| Red card | 0.0143 | 0.0271 |
+| Ball out of play | 0.0000 | 0.0000 |
+| **Average-mAP** | **0.3818** | **0.5286** |
+
+The 14-point gap between mAP@1s and mAP@5s is largely structural: at 2fps, one frame equals 0.5 seconds, so any prediction that is off by a single frame misses the 1-second tolerance entirely. Higher frame-rate features would close this gap significantly.
+
+### C. Implementation Details
+
+**Hardware:** Apple MacBook Pro M4 Pro, 24GB unified memory. Training uses PyTorch MPS backend (~3 hours to convergence).
+
+**Data storage:** SoccerNet ResNet-152 features (~200GB) stored on external Samsung T5 SSD. Preprocessed `.npz` windows (~70GB) stored on internal SSD for fast DataLoader I/O.
 
 **Key commands:**
 - Preprocessing: `python -m src.preprocess`
@@ -228,12 +267,14 @@ My primary responsibility was the model architecture and training pipeline. I de
 - Evaluation: `python main.py --mode evaluate`
 - Threshold tuning: `python -m src.tune_thresholds`
 
-### C. Approaches That Did Not Work
+**Notebook:** A self-contained demo running the full pipeline on synthetic data is available in `CS518_ActionSpotting_Demo.ipynb` — no SoccerNet download required.
 
-**Raw positive weights (no sqrt):** Using the raw neg/pos ratio (~1000×) as `pos_weight` in BCEWithLogitsLoss caused loss to spike to NaN within 2 epochs. The gradient from a single positive frame swamped all others. Applying a square-root dampened this to a stable range of 8–45.
+### D. Approaches That Did Not Work
 
-**Fixed global threshold (0.5):** The model's softmax-like outputs rarely exceeded 0.35 for any class. A 0.5 threshold produced zero detections. Sweeping per-class thresholds on the validation set and selecting 0.05 for most classes was the fix that unlocked meaningful mAP gains.
+**Hard BCE with raw class weights:** Using the raw neg/pos ratio (~1000×) as `pos_weight` caused loss to spike to NaN within 2 epochs. The sqrt scaling was essential to bring weights into a stable 8–45 range.
 
-**MPS with pin_memory:** Setting `pin_memory=True` in the DataLoader triggered a PyTorch warning on MPS and actually slowed transfers. Disabling it and setting `num_workers=0` gave stable, faster training.
+**Global threshold (0.5):** The model's output scores rarely exceed 0.35. A single 0.5 threshold produced zero detections. Per-class threshold tuning on the validation set (sweeping 0.05–0.50) resolved this.
 
-**Transformer with ReLU activation in FFN:** An early variant used ReLU in the feed-forward sublayers (matching the original "Attention is All You Need" paper exactly). Switching to GELU gave a small but consistent ~0.5% mAP improvement, likely due to smoother gradients on sparse binary targets.
+**pin_memory=True on MPS:** Triggers a PyTorch warning and slower transfers on Apple Silicon. Setting `pin_memory=False` and `num_workers=0` gave stable, faster training.
+
+**Eager loading full game arrays:** Loading full `.npy` game files during training caused 18GB+ RAM usage and OOM kills. Pre-slicing into `.npz` windows reduced peak RAM to under 4GB.

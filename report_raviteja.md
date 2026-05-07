@@ -212,28 +212,69 @@ We presented a lightweight Transformer encoder for temporal action spotting on S
 
 ## Appendix
 
-### A. Personal Contribution
+### A. Individual Contribution
 
-My focus was on the inference pipeline, evaluation framework, and result analysis. I implemented `src/evaluate.py`, which handles sliding-window inference with overlap averaging, per-class non-maximum suppression, and the SoccerNet JSON output format. One non-obvious design choice was the NMS suppression window: too small (±3 frames) and the same event generated multiple detections at slightly different frames; too large (±20 frames) and closely spaced events of the same class were merged. Empirically, ±10 frames balanced precision and recall across all 17 classes. I also wrote `src/tune_thresholds.py`, which sweeps confidence thresholds per class on the validation set, a step that alone improved mAP@1s from ~31% to 38.18%.
+My primary responsibility was the inference pipeline, evaluation framework, and result analysis. I implemented `src/evaluate.py`, covering sliding-window inference with overlap averaging, per-class non-maximum suppression, and the SoccerNet JSON output format required by the official evaluator. A key design decision was the NMS suppression window: ±3 frames caused duplicate detections for the same event; ±20 frames merged distinct closely-spaced events. Empirically, ±10 frames balanced precision and recall across all 17 classes. I also wrote `src/tune_thresholds.py`, sweeping confidence thresholds per class on the validation set — this single step improved mAP@1s from ~31.94% to 38.18%. I performed the full per-class error analysis, identifying why Ball out of play (0%) and Red card (1.4%) are structural failures rather than model failures.
 
-### B. Implementation Details
+### B. Evaluation
 
-**Hardware:** Apple MacBook Pro M4 Pro, 24GB unified memory. Inference runs on MPS; full test-set evaluation takes ~25 minutes.
+**Ablation Study**
 
-**Output format:** Predictions are saved per game as `results_spotting.json` matching the SoccerNet submission schema: `{ "predictions": [{ "gameTime": "1 - 12:34", "label": "Goal", "position": 754000, "half": 1, "confidence": 0.82 }, ...] }`.
+| Configuration | mAP@1s | mAP@5s |
+|---|---|---|
+| Baseline: plain BCE, no weighting | ~0% | ~0% |
+| + Sqrt inverse-frequency class weights | ~24% | ~39% |
+| + Focal loss (γ=2) | ~28% | ~44% |
+| + L2 feature normalization | 31.94% | ~48% |
+| + Per-class threshold tuning | **38.18%** | **52.86%** |
 
-**Threshold tuning:** Per-class thresholds swept over [0.05, 0.50] in steps of 0.05 on the validation set. Most classes converged to 0.05; Ball out of play settled at 0.20, Goal at 0.25.
+Each component contributes meaningfully. The baseline predicts nothing — class weights alone recover 24% mAP@1s. Focal loss pushes hard examples, L2 normalization removes scale variance, and per-class threshold tuning provides the largest single jump from ~31% to 38.18%.
+
+**Full Per-Class Results (Test Set)**
+
+| Class | mAP@1s | mAP@5s |
+|---|---|---|
+| Substitution | 0.6951 | 0.8630 |
+| Foul | 0.6281 | 0.8096 |
+| Yellow card | 0.5572 | 0.7663 |
+| Offside | 0.5807 | 0.6409 |
+| Throw-in | 0.4852 | 0.6684 |
+| Yellow→red card | 0.4757 | 0.6566 |
+| Corner | 0.4514 | 0.6606 |
+| Goal | 0.4483 | 0.7390 |
+| Goalkeeper saves | 0.4422 | 0.6970 |
+| Shots off target | 0.4083 | 0.4636 |
+| Shots on target | 0.3635 | 0.4496 |
+| Indirect free-kick | 0.3262 | 0.5699 |
+| Clearance | 0.2850 | 0.3802 |
+| Direct free-kick | 0.2825 | 0.5207 |
+| Kick-off | 0.0472 | 0.0745 |
+| Red card | 0.0143 | 0.0271 |
+| Ball out of play | 0.0000 | 0.0000 |
+| **Average-mAP** | **0.3818** | **0.5286** |
+
+The 14-point gap between mAP@1s and mAP@5s is largely structural: at 2fps, one frame equals 0.5 seconds, so any prediction that is off by a single frame misses the 1-second tolerance entirely. Higher frame-rate features would close this gap significantly.
+
+### C. Implementation Details
+
+**Hardware:** Apple MacBook Pro M4 Pro, 24GB unified memory. Training uses PyTorch MPS backend (~3 hours to convergence).
+
+**Data storage:** SoccerNet ResNet-152 features (~200GB) stored on external Samsung T5 SSD. Preprocessed `.npz` windows (~70GB) stored on internal SSD for fast DataLoader I/O.
 
 **Key commands:**
-- Inference + evaluation: `python main.py --mode evaluate`
+- Preprocessing: `python -m src.preprocess`
+- Training: `python main.py --mode train`
+- Evaluation: `python main.py --mode evaluate`
 - Threshold tuning: `python -m src.tune_thresholds`
 
-### C. Approaches That Did Not Work
+**Notebook:** A self-contained demo running the full pipeline on synthetic data is available in `CS518_ActionSpotting_Demo.ipynb` — no SoccerNet download required.
 
-**Single global threshold (0.5):** The model's output scores are calibrated low — most confident predictions sit around 0.2–0.35. A 0.5 cutoff produced zero detections across all classes. Per-class tuning on validation data was essential.
+### D. Approaches That Did Not Work
 
-**NMS by score suppression only:** An early NMS version deleted all frames within the suppression window regardless of class. This incorrectly suppressed simultaneous events of different classes (e.g., a foul and a yellow card at the same timestamp). Switching to per-class NMS fixed this.
+**Hard BCE with raw class weights:** Using the raw neg/pos ratio (~1000×) as `pos_weight` caused loss to spike to NaN within 2 epochs. The sqrt scaling was essential to bring weights into a stable 8–45 range.
 
-**Averaging logits instead of probabilities across windows:** Overlap averaging was first applied to raw logits before the sigmoid. Because logit scales vary across classes (high-frequency classes have larger logit magnitudes), averaging logits over-weighted those classes. Averaging post-sigmoid probabilities gave a more balanced and accurate consensus.
+**Global threshold (0.5):** The model's output scores rarely exceed 0.35. A single 0.5 threshold produced zero detections. Per-class threshold tuning on the validation set (sweeping 0.05–0.50) resolved this.
 
-**Using SoccerNet's official evaluator directly on raw scores:** The official `evaluate` function expects predictions already filtered by threshold. Passing all frames (with scores near zero) caused the AP computation to be dominated by false positives and returned near-zero mAP even for well-trained models. Applying the confidence threshold before passing to the evaluator was the fix.
+**pin_memory=True on MPS:** Triggers a PyTorch warning and slower transfers on Apple Silicon. Setting `pin_memory=False` and `num_workers=0` gave stable, faster training.
+
+**Eager loading full game arrays:** Loading full `.npy` game files during training caused 18GB+ RAM usage and OOM kills. Pre-slicing into `.npz` windows reduced peak RAM to under 4GB.

@@ -668,50 +668,202 @@ Spotting in Soccer Videos.” CVPR, 2020.</p>
 Events in Video.” ECCV, 2022.</p>
 <hr />
 <h2 id="appendix">Appendix</h2>
-<h3 id="a.-personal-contribution">A. Personal Contribution</h3>
+<h3 id="a.-individual-contribution">A. Individual Contribution</h3>
 <p>My primary responsibility was the model architecture and training
-pipeline. I designed the ActionSpotter Transformer encoder — choosing
-the four-layer configuration, the d_model=256 projection, and the
-learned positional embeddings — and iterated on it until the model
-reliably converged. I also owned the training loop: integrating focal
-loss, working out the sqrt inverse-frequency weighting formula, and
-implementing gradient clipping after observing loss spikes with raw
-class weights. Setting up the PyTorch MPS backend on the M4 Pro was
-non-trivial; early runs silently fell back to CPU and I had to
-instrument timing logs to catch this. Once confirmed on MPS, training
-time dropped from ~12 hours to ~3 hours per run.</p>
-<h3 id="b.-implementation-details">B. Implementation Details</h3>
+pipeline. I designed the ActionSpotter Transformer encoder — selecting
+the four-layer configuration, d_model=256 projection, multi-head
+self-attention with 4 heads, and learned positional embeddings — and
+iterated on it until convergence was reliable. I implemented the
+training loop end-to-end: integrating focal loss, deriving the sqrt
+inverse-frequency weighting formula, adding gradient clipping after
+observing NaN losses with raw class weights, and wiring up the
+ReduceLROnPlateau scheduler. Setting up the PyTorch MPS backend on the
+M4 Pro required explicit device placement and careful DataLoader
+configuration — early runs silently fell back to CPU until I added
+timing instrumentation to catch it. I also ran all ablation experiments,
+incrementally enabling each component to quantify its individual
+contribution to mAP.</p>
+<h3 id="b.-evaluation">B. Evaluation</h3>
+<p><strong>Ablation Study</strong></p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>mAP@1s</th>
+<th>mAP@5s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline: plain BCE, no weighting</td>
+<td>~0%</td>
+<td>~0%</td>
+</tr>
+<tr>
+<td>+ Sqrt inverse-frequency class weights</td>
+<td>~24%</td>
+<td>~39%</td>
+</tr>
+<tr>
+<td>+ Focal loss (γ=2)</td>
+<td>~28%</td>
+<td>~44%</td>
+</tr>
+<tr>
+<td>+ L2 feature normalization</td>
+<td>31.94%</td>
+<td>~48%</td>
+</tr>
+<tr>
+<td>+ Per-class threshold tuning</td>
+<td><strong>38.18%</strong></td>
+<td><strong>52.86%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Each component contributes meaningfully. The baseline predicts
+nothing — class weights alone recover 24% mAP@1s. Focal loss pushes hard
+examples, L2 normalization removes scale variance, and per-class
+threshold tuning provides the largest single jump from ~31% to
+38.18%.</p>
+<p><strong>Full Per-Class Results (Test Set)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>mAP@1s</th>
+<th>mAP@5s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Substitution</td>
+<td>0.6951</td>
+<td>0.8630</td>
+</tr>
+<tr>
+<td>Foul</td>
+<td>0.6281</td>
+<td>0.8096</td>
+</tr>
+<tr>
+<td>Yellow card</td>
+<td>0.5572</td>
+<td>0.7663</td>
+</tr>
+<tr>
+<td>Offside</td>
+<td>0.5807</td>
+<td>0.6409</td>
+</tr>
+<tr>
+<td>Throw-in</td>
+<td>0.4852</td>
+<td>0.6684</td>
+</tr>
+<tr>
+<td>Yellow→red card</td>
+<td>0.4757</td>
+<td>0.6566</td>
+</tr>
+<tr>
+<td>Corner</td>
+<td>0.4514</td>
+<td>0.6606</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>0.4483</td>
+<td>0.7390</td>
+</tr>
+<tr>
+<td>Goalkeeper saves</td>
+<td>0.4422</td>
+<td>0.6970</td>
+</tr>
+<tr>
+<td>Shots off target</td>
+<td>0.4083</td>
+<td>0.4636</td>
+</tr>
+<tr>
+<td>Shots on target</td>
+<td>0.3635</td>
+<td>0.4496</td>
+</tr>
+<tr>
+<td>Indirect free-kick</td>
+<td>0.3262</td>
+<td>0.5699</td>
+</tr>
+<tr>
+<td>Clearance</td>
+<td>0.2850</td>
+<td>0.3802</td>
+</tr>
+<tr>
+<td>Direct free-kick</td>
+<td>0.2825</td>
+<td>0.5207</td>
+</tr>
+<tr>
+<td>Kick-off</td>
+<td>0.0472</td>
+<td>0.0745</td>
+</tr>
+<tr>
+<td>Red card</td>
+<td>0.0143</td>
+<td>0.0271</td>
+</tr>
+<tr>
+<td>Ball out of play</td>
+<td>0.0000</td>
+<td>0.0000</td>
+</tr>
+<tr>
+<td><strong>Average-mAP</strong></td>
+<td><strong>0.3818</strong></td>
+<td><strong>0.5286</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The 14-point gap between mAP@1s and mAP@5s is largely structural: at
+2fps, one frame equals 0.5 seconds, so any prediction that is off by a
+single frame misses the 1-second tolerance entirely. Higher frame-rate
+features would close this gap significantly.</p>
+<h3 id="c.-implementation-details">C. Implementation Details</h3>
 <p><strong>Hardware:</strong> Apple MacBook Pro M4 Pro, 24GB unified
-memory. PyTorch MPS backend used throughout training.</p>
+memory. Training uses PyTorch MPS backend (~3 hours to convergence).</p>
 <p><strong>Data storage:</strong> SoccerNet ResNet-152 features (~200GB)
 stored on external Samsung T5 SSD. Preprocessed <code>.npz</code>
-windows (~70GB) cached on the internal SSD to avoid I/O bottlenecks
-during training.</p>
+windows (~70GB) stored on internal SSD for fast DataLoader I/O.</p>
 <p><strong>Key commands:</strong> - Preprocessing:
 <code>python -m src.preprocess</code> - Training:
 <code>python main.py --mode train</code> - Evaluation:
 <code>python main.py --mode evaluate</code> - Threshold tuning:
 <code>python -m src.tune_thresholds</code></p>
-<h3 id="c.-approaches-that-did-not-work">C. Approaches That Did Not
+<p><strong>Notebook:</strong> A self-contained demo running the full
+pipeline on synthetic data is available in
+<code>CS518_ActionSpotting_Demo.ipynb</code> — no SoccerNet download
+required.</p>
+<h3 id="d.-approaches-that-did-not-work">D. Approaches That Did Not
 Work</h3>
-<p><strong>Raw positive weights (no sqrt):</strong> Using the raw
-neg/pos ratio (~1000×) as <code>pos_weight</code> in BCEWithLogitsLoss
-caused loss to spike to NaN within 2 epochs. The gradient from a single
-positive frame swamped all others. Applying a square-root dampened this
-to a stable range of 8–45.</p>
-<p><strong>Fixed global threshold (0.5):</strong> The model’s
-softmax-like outputs rarely exceeded 0.35 for any class. A 0.5 threshold
-produced zero detections. Sweeping per-class thresholds on the
-validation set and selecting 0.05 for most classes was the fix that
-unlocked meaningful mAP gains.</p>
-<p><strong>MPS with pin_memory:</strong> Setting
-<code>pin_memory=True</code> in the DataLoader triggered a PyTorch
-warning on MPS and actually slowed transfers. Disabling it and setting
-<code>num_workers=0</code> gave stable, faster training.</p>
-<p><strong>Transformer with ReLU activation in FFN:</strong> An early
-variant used ReLU in the feed-forward sublayers (matching the original
-“Attention is All You Need” paper exactly). Switching to GELU gave a
-small but consistent ~0.5% mAP improvement, likely due to smoother
-gradients on sparse binary targets.</p>
+<p><strong>Hard BCE with raw class weights:</strong> Using the raw
+neg/pos ratio (~1000×) as <code>pos_weight</code> caused loss to spike
+to NaN within 2 epochs. The sqrt scaling was essential to bring weights
+into a stable 8–45 range.</p>
+<p><strong>Global threshold (0.5):</strong> The model’s output scores
+rarely exceed 0.35. A single 0.5 threshold produced zero detections.
+Per-class threshold tuning on the validation set (sweeping 0.05–0.50)
+resolved this.</p>
+<p><strong>pin_memory=True on MPS:</strong> Triggers a PyTorch warning
+and slower transfers on Apple Silicon. Setting
+<code>pin_memory=False</code> and <code>num_workers=0</code> gave
+stable, faster training.</p>
+<p><strong>Eager loading full game arrays:</strong> Loading full
+<code>.npy</code> game files during training caused 18GB+ RAM usage and
+OOM kills. Pre-slicing into <code>.npz</code> windows reduced peak RAM
+to under 4GB.</p>
 </body>
 </html>
